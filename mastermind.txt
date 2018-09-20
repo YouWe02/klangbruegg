@@ -1,0 +1,178 @@
+package mastermind;
+import java.util.Random;
+import java.util.Scanner;
+
+
+public class Mastermind {
+
+	//Instanzvariablen
+	private static final String STARTTEXT = "Geben Sie einen Versuchscode mit 4 Buchstaben aus der Menge {r, b, g, w, y, s} ein:";
+	private char[] colors = new char[]{'r', 'b', 'g', 'w', 'y', 's'};
+	private char[] code = new char[4];
+	private char[] code_copy;
+	private char[] user_code = new char[4];
+	private char[] user_code_copy;
+	private Scanner scanner = new Scanner(System.in);
+	private int tries = 0;
+	
+	
+	//Main-Method
+	public static void main (String args[]) {
+		Mastermind game = new Mastermind();
+		game.initGame();
+		game.playGame();
+	}
+	
+	/**
+	 * Makes all the preparations for the Game.
+	 */
+	public void initGame() {
+		Random random = new Random();
+		int randomNumber;
+		for(int i = 0; i < code.length; i++) {
+			randomNumber = random.nextInt(colors.length);
+			code[i] = colors[randomNumber];
+		}
+	}
+	
+	/**
+	 * Runs the game
+	 */
+	public void playGame() {
+		while(true) {
+			if(tries >= 12) {
+				loose();
+			}
+			tries++;			
+			System.out.println(STARTTEXT);
+			System.out.println(code);
+			String temp = scanner.nextLine();
+			
+			if (temp.length() == code.length && checkInput(temp)) {
+				
+				user_code = temp.toCharArray();
+				code_copy = createCopy(code);
+				user_code_copy = createCopy(user_code);
+				
+				int matches = check(true);
+				
+				if(matches == code.length) {
+					win();
+					break;
+				}
+				
+				int rights = check(false);
+				
+				wrong(matches, rights);
+			}
+			
+			else {
+				System.out.println("Falsche Eingabe");
+				tries--;
+			}
+		}
+		
+	}
+	
+	/**
+	 * Prints the Text of a win out.
+	 */
+	public void win() {
+		System.out.println("Herzlichen Glückwunsch, du hast gewonnen");
+		System.out.println("Anzahl Versuche " + tries);
+	}
+	
+	public void loose() {
+		System.out.println("Leider verloren, keine Versuche mehr...");
+	}
+	
+	/**
+	 * Prints the Text of a loss out.
+	 * @param matches Amount of matches user_code -> code
+	 * @param rights Amount of rigths user_code -> code
+	 */
+	public void wrong(int matches, int rights) {
+		System.out.println(matches + " korrekte Farben an der korrekten Position.");
+		System.out.println(rights + " korrekte Farben an der falschen Position\n");
+	}
+	
+	/**
+	 * Checks the user input.
+	 * @param input User input
+	 * @return boolean if input is right -> true
+	 */
+	public boolean checkInput(String input) {
+		boolean right = false;
+		int runs = 0;
+		char[] inputarray = input.toCharArray();
+		for(char letter : inputarray) {
+			for(int i = 0; i < colors.length; i++) {
+				if (letter == colors[i]) {
+					right = true;
+					break;
+				}
+				else {
+					right = false;
+				}
+			}
+			if(right) {
+				runs++;
+			}
+		}
+		if(runs == 4) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Creates & returns a copy of the array
+	 * @param original original array
+	 * @return copy of original.
+	 */
+	public char[] createCopy(char[] original) {
+		char[] copy = new char[original.length];
+		for(int i = 0; i < original.length; i++) {
+			copy[i] = original[i];
+		}
+		return copy;
+	}
+	
+	/**
+	 * Checks amount of matches & rights
+	 * @param matches Should be check if the Letters are right AND at the right position.
+	 * @return Amount of matches / rights
+	 */
+	public int check(boolean matches) {
+		int returnValue = 0;
+		
+		if(matches) {
+			for(int i = 0; i < code.length; i++) {
+				if(user_code[i] == code[i]) {
+					returnValue++;
+					code_copy[i] = 'x';
+					user_code_copy[i] = 'y';
+				}
+			}
+			return returnValue;
+		}
+		
+		returnValue = 0;
+		for (char color : user_code_copy) {
+			for (int i = 0; i < code.length; i++) {
+				if (color == code_copy[i]) {
+					returnValue++;
+					code_copy[i] = 'x';
+					break;
+				}
+			}
+		}
+		return returnValue;
+		
+		
+	}
+
+
+}
