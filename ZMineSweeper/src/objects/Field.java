@@ -4,17 +4,35 @@ import java.util.Random;
 
 import exceptions.BombOnFieldException;
 
+/**
+ * Diese Klasse repräsentiert das Feld vom Minesweeper.
+ * 
+ * @author Elizar Pongracz
+ *
+ */
 public class Field {
 
 	Random random = new Random();
 	int randomIntRange;
 	Cell[][] feld;
 
+
+	/**
+	 * Konstruktor
+	 * 
+	 * @param x      Anzahl Felder - X Achse
+	 * @param y      Anzahl Felder - Y Achse
+	 * @param random Schwierigkeitsgrad. Je geringer die Zahl, umso mehr Bomben wird
+	 *               es geben.
+	 */
 	public Field(int x, int y, int random) {
 		this.feld = new Cell[x][y];
 		this.randomIntRange = random;
 	}
 
+	/**
+	 * Erstellt das Feld & verteilt Bomben.
+	 */
 	public void createField() {
 		for (int i = 0; i < feld.length; i++) {
 			for (int j = 0; j < feld.length; j++) {
@@ -32,6 +50,10 @@ public class Field {
 		countNeightbours();
 	}
 
+	/**
+	 * Zählt die Bomben um ein Feld & speichert dies in der BombsAround Variable vom
+	 * Feld.
+	 */
 	public void countNeightbours() {
 		for (int i = 0; i < feld.length; i++) {
 			for (int j = 0; j < feld.length; j++) {
@@ -75,6 +97,11 @@ public class Field {
 
 	}
 
+	/**
+	 * Überprüft, ob das Spiel gewonnen wurde
+	 * 
+	 * @return true --> win false--> no win
+	 */
 	public boolean isWon() {
 		boolean isWon = true;
 		for (int i = 0; i < feld.length; i++) {
@@ -87,6 +114,13 @@ public class Field {
 		return isWon;
 	}
 
+	/**
+	 * Checkt ob eine Bombe auf dem Feld ist und die Nachbaren fragt es dann auch.
+	 * 
+	 * @param x
+	 * @param y
+	 * @throws BombOnFieldException
+	 */
 	public void checkField(Integer x, Integer y) throws BombOnFieldException {
 
 		if (feld[x][y].isBombe()) {
@@ -103,24 +137,32 @@ public class Field {
 
 	}
 
+	/**
+	 * Deckt die Nachbaren auf fals muss.
+	 * 
+	 */
 	public void revealNeightbours(Integer x, Integer y) throws BombOnFieldException {
 
 		if (inField(x, y) && inField(x, y) && feld[x][y].isAufgedeckt() == false) {
 			feld[x][y].setAufgedeckt(true);
-			checkIfReveal(x - 1, y, x, y);
-			checkIfReveal(x + 1, y, x, y);
-			checkIfReveal(x, y - 1, x, y);
-			checkIfReveal(x, y + 1, x, y);
-			checkIfReveal(x + 1, y + 1, x, y);
-			checkIfReveal(x - 1, y - 1, x, y);
-			checkIfReveal(x + 1, y - 1, x, y);
-			checkIfReveal(x - 1, y + 1, x, y);
+			checkIfReveal(x - 1, y);
+			checkIfReveal(x + 1, y);
+			checkIfReveal(x, y - 1);
+			checkIfReveal(x, y + 1);
+			checkIfReveal(x + 1, y + 1);
+			checkIfReveal(x - 1, y - 1);
+			checkIfReveal(x + 1, y - 1);
+			checkIfReveal(x - 1, y + 1);
 
 		}
 
 	}
 
-	public void checkIfReveal(Integer x, Integer y, Integer xReal, Integer yReal) throws BombOnFieldException {
+	/**
+	 * Schaut ob die neuen Plätze gültig sind
+	 * 
+	 */
+	public void checkIfReveal(Integer x, Integer y) throws BombOnFieldException {
 		if (inField(x, y)) {
 			checkField(x, y);
 
@@ -128,10 +170,18 @@ public class Field {
 
 	}
 
+	/**
+	 * Methode um zu verhindern das eine Exception geworfen wird.
+	 * 
+	 */
 	public boolean inField(Integer x, Integer y) {
 		return x > -1 && x < feld.length && y > -1 && y < feld.length;
 	}
 
+	/**
+	 * Deckt das Feld auf wenn das Spiel fertig ist.
+	 * 
+	 */
 	public void revealField() {
 		for (int i = 0; i < feld.length; i++) {
 			for (int j = 0; j < feld.length; j++) {
@@ -144,6 +194,10 @@ public class Field {
 
 	}
 
+	/**
+	 * Printet das Feld für den Benutzer
+	 * 
+	 */
 	public void printField() {
 		System.out.println("____________________________________________");
 		System.out.print("   ");
@@ -173,6 +227,18 @@ public class Field {
 
 		}
 		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	}
+
+	/**
+	 * Printet am Ende ob man gewonnen oder verloren hat.
+	 * 
+	 */
+	public void zeigeSchlussmeldung(boolean won) {
+		if (won) {
+			System.out.println("Du hast gewonnen.");
+		} else {
+			System.out.println("Sie haben eine Bombe getroffen und somit veloren");
+		}
 	}
 
 }
